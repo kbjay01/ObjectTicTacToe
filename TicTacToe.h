@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <ctime>
-#include <array>
 #define String std::string
 #define uchar unsigned char
 #define uint unsigned int
