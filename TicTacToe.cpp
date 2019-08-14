@@ -1,7 +1,14 @@
 #include "TicTacToe.h"
 
+//**GAME**
+void Game::StartGame() {
+	GameState = GS_STARTED;
+}
+
+// *********************
 // **PLAYERS**
-String Players::getPlayerName(__int8 nameID) {
+// *********************
+String Players::getPlayerName(__int8 nameID){
 	return (nameID == 1 ? player1_name : player2_name);
 }
 
@@ -20,7 +27,7 @@ void Players::SetRandomSignToPlayerName() {
 	player1_char = rand() % 2 == 0 ? PL_CIRCLE : PL_CROSS;
 	player1_char == PL_CIRCLE ? player2_char = PL_CROSS : PL_CIRCLE;
 }
-
+ 
 void Players::DrawWhosFirst() {
 	current_player = rand() % 2 == 0 ? PL_CIRCLE : PL_CROSS;
 }
@@ -34,25 +41,8 @@ void Players::NextPlayer() {
 // *********************
 
 // Constructor
-Map::Map() : FIELD_MAP{
-	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY},
-	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY},
-	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY} }
-{
+Map::Map() : LINES{
 
-}
-void Map::CreateFieldMap() {
-
-	static FIELD field_map[3][3]{
-	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY},
-	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY},
-	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY}
-	};
-}
-
-void Map::CreateLinesArray() {
-
-	const uchar LINES[][3][2] = {
  { { 0,0 }, { 0,1 }, { 0,2 } }, // top horizontal
  { { 1,0 }, { 1,1 }, { 1,2 } },// mid vertcal
  { { 2,0 }, { 2,1 }, { 2,2 } },// bottom horizontal
@@ -60,7 +50,15 @@ void Map::CreateLinesArray() {
  { { 0,1 }, { 1,1 }, { 2,1 } }, // mid vertcal
  { { 0,2 }, { 1,2 }, { 2,2 } }, // right vertcal
  { { 0,0 }, { 1,1 }, { 2,2 } }, // right backslash
- { { 2,0 }, { 1,1 }, { 0,2 } } }; // right slash 
+ { { 2,0 }, { 1,1 }, { 0,2 } } } // right slash 
+
+{
+	for (char i = 0; i < 3; i++) {
+		for (char j = 0; j < 3; j++) {
+			// Filling whole array with FLD_EMPTY values
+			FIELD_MAP[i][j] = FLD_EMPTY;
+		}
+	}	
 }
 
 void Map::DrawHeaderAndMap() {
@@ -141,10 +139,10 @@ bool Map::CheckIfSomeoneWon() {
 		// check if whole line is winnable
 		if (CorrectFieldCounter == 3 && CorrectField != FLD_EMPTY)
 		{
-			// if yes, set GameSate to Won
+			// if yes, set GameState to Won
 			Game::GameState = GS_WON;
 			// break loop and function
-			return;
+			return true;
 		}
 	}
 }
