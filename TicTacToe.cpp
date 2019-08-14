@@ -1,11 +1,11 @@
 #include "TicTacToe.h"
 
 // **PLAYERS**
-String Players::getPlayerName(__int8 nameID){
+String Players::getPlayerName(__int8 nameID) {
 	return (nameID == 1 ? player1_name : player2_name);
 }
 
-void Players::askAndSaveGivenNames() {
+void Players::AskAndSetGivenNames() {
 
 	Game::GameState = GS_STARTED;
 	std::cout << "Enter player1 (circle) name: ";
@@ -14,25 +14,34 @@ void Players::askAndSaveGivenNames() {
 	std::cin >> player2_name;
 }
 
-void Players::assignRandomSignToPlayerName() {
+void Players::SetRandomSignToPlayerName() {
 
 	srand(static_cast<uint>(time(NULL)));
 	player1_char = rand() % 2 == 0 ? PL_CIRCLE : PL_CROSS;
 	player1_char == PL_CIRCLE ? player2_char = PL_CROSS : PL_CIRCLE;
 }
- 
-void Players::drawWhosFirst() {
+
+void Players::DrawWhosFirst() {
 	current_player = rand() % 2 == 0 ? PL_CIRCLE : PL_CROSS;
 }
 
-void Players::nextPlayer() {
+void Players::NextPlayer() {
 	current_player = (current_player == PL_CIRCLE ? PL_CROSS : PL_CIRCLE);
 }
 
 // **********************
 // **MAP**
-// **********************
-void Map::createFieldMap() {
+// *********************
+
+// Constructor
+Map::Map() : FIELD_MAP{
+	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY},
+	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY},
+	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY} }
+{
+
+}
+void Map::CreateFieldMap() {
 
 	static FIELD field_map[3][3]{
 	{FLD_EMPTY,FLD_EMPTY,FLD_EMPTY},
@@ -41,7 +50,7 @@ void Map::createFieldMap() {
 	};
 }
 
-void Map::createLinesArray() {
+void Map::CreateLinesArray() {
 
 	const uchar LINES[][3][2] = {
  { { 0,0 }, { 0,1 }, { 0,2 } }, // top horizontal
@@ -54,7 +63,7 @@ void Map::createLinesArray() {
  { { 2,0 }, { 1,1 }, { 0,2 } } }; // right slash 
 }
 
-void Map::drawHeaderAndMap() {
+void Map::DrawHeaderAndMap() {
 
 	// *HEADER*
 	std::cout << "     Objective TicTacToe     " << std::endl;
@@ -69,12 +78,12 @@ void Map::drawHeaderAndMap() {
 
 		// Line
 		for (uchar j = 0; j < 3; ++j) {
-			if (field_map[i][j] == FLD_EMPTY) {
+			if (FIELD_MAP[i][j] == FLD_EMPTY) {
 				// field ID
 				std::cout << i * 3 + j + 1;
 			}
 			else {
-				std::cout << static_cast<char>(field_map[i][j]);
+				std::cout << static_cast<char>(FIELD_MAP[i][j]);
 			}
 		}
 		// Right frame
@@ -84,7 +93,7 @@ void Map::drawHeaderAndMap() {
 	std::cout << std::endl;
 }
 
-bool Map::checkIfMoveIsLegalAndMove(uchar fieldID) {
+bool Map::CheckIfMoveIsLegalAndMove(uchar fieldID) {
 
 	Game::GameState = GS_MOVE;
 	// if field is not in correct range -> break function
@@ -95,14 +104,14 @@ bool Map::checkIfMoveIsLegalAndMove(uchar fieldID) {
 	uint y = (fieldID - 1) % 3;
 
 	// Check if field can be taken
-	if (field_map[x][y] == FLD_EMPTY) {
-		field_map[x][y] = static_cast<FIELD>(Players::current_player);
+	if (FIELD_MAP[x][y] == FLD_EMPTY) {
+		FIELD_MAP[x][y] = static_cast<FIELD>(Players::current_player);
 		return true;
 	}
 	else return false; // Impossible
 }
 
-bool Map::checkIfSomeoneWon() {
+bool Map::CheckIfSomeoneWon() {
 
 	FIELD Field, CorrectField;
 	uchar CorrectFieldCounter;
@@ -116,7 +125,7 @@ bool Map::checkIfSomeoneWon() {
 		{
 			// j iterates every 3 fields in every line
 			// We're getting field
-			Field = field_map[LINES[i][j][0]][LINES[i][j][1]];
+			Field = FIELD_MAP[LINES[i][j][0]][LINES[i][j][1]];
 			// if checked field is diffrent than correct field...
 			if (Field != CorrectField)
 			{
@@ -140,12 +149,12 @@ bool Map::checkIfSomeoneWon() {
 	}
 }
 
-bool Map::checkIfDrawOccured() {
+bool Map::CheckIfDrawOccured() {
 
 	uchar amount_Of_Filled_Fields = 0;
 	for (uchar i = 0; i <= 3; i++) {
 		for (uchar j = 0; j < 3; j++) {
-			if (field_map[i][j] != FLD_EMPTY) {
+			if (FIELD_MAP[i][j] != FLD_EMPTY) {
 				++amount_Of_Filled_Fields;
 			}
 		}
