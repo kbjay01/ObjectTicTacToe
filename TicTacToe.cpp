@@ -1,8 +1,13 @@
 #include "TicTacToe.h"
 
 //**GAME**
+
+void Game::SetGameState(GAME_STATE newGameState) {
+	gameState = newGameState;
+}
+
 void Game::StartNewGame() {
-	GameState = GS_STARTED;
+	gameState = GS_STARTED;
 }
 
 void Game::DrawHeader() {
@@ -12,44 +17,54 @@ void Game::DrawHeader() {
 	std::cout << "" << std::endl;
 }
 
-void Game::PauseUntilKeyIsPressed() {
-	_getch();
+void Game::Pause() {
+	_getch;
 }
 
 // *********************
 // **PLAYERS**
 // *********************
-std::string Players::GetPlayerName(__int8 nameID){
-	return (nameID == 1 ? player1_name : player2_name);
+
+// Players Constructor
+Players::Players() {
+	player1_name, player2_name = "NO_NAME";
+	Player1Char, Player2Char = PL_UNKNOWN;
+	current_player_name = "UNKNOWN_NAME";
+	CurrentPlayerSign = PL_UNKNOWN;
 }
 
-PLAYER_TYPE Players::GetPlayerChar(__int8 nameID) {
-	return (nameID == 1 ? Player1Char : Player2Char);
+PLAYER_TYPE Players::GetCurrentPlayerSign() {
+	return CurrentPlayerSign;
+}
+
+string Players::GetCurrentPlayerName() {
+	return current_player_name;
 }
 
 void Players::AskAndSetGivenNames() {
 
-	Game::GameState = GS_STARTED;
+	Game::gameState = GS_STARTED;
 	std::cout << "Enter player1 name: ";
 	std::cin >> player1_name;
 	std::cout << "Enter player2 name: ";
 	std::cin >> player2_name;
-	std::cout << std::endl;
 }
 
 void Players::SetRandomSignToPlayerName() {
 
-	srand(static_cast<uint>(time(NULL)));
+	srand(static_cast<int>(time(NULL)));
 	Player1Char = rand() % 2 == 0 ? PL_CIRCLE : PL_CROSS;
 	Player1Char == PL_CIRCLE ? Player2Char = PL_CROSS : PL_CIRCLE;
 }
- 
+
 void Players::DrawWhosFirst() {
-	CurrentPlayer = rand() % 2 == 0 ? PL_CIRCLE : PL_CROSS;
+	CurrentPlayerSign = rand() % 2 == 0 ? PL_CIRCLE : PL_CROSS;
+	current_player_name = (Player1Char == CurrentPlayerSign ? player1_name : player2_name);
 }
 
 void Players::NextPlayer() {
-	CurrentPlayer = (CurrentPlayer == PL_CIRCLE ? PL_CROSS : PL_CIRCLE);
+	CurrentPlayerSign = (CurrentPlayerSign == PL_CIRCLE ? PL_CROSS : PL_CIRCLE);
+	current_player_name = (Player1Char == CurrentPlayerSign ? player1_name : player2_name);
 }
 
 
@@ -57,8 +72,8 @@ void Players::NextPlayer() {
 // **MAP**
 // *********************
 
-// Constructor
-Map::Map() : Lines{
+// Map Constructor
+Map::Map() : Lines {
 
 	{ { 0,0 }, { 0,1 }, { 0,2 } }, // top horizontal
 	{ { 1,0 }, { 1,1 }, { 1,2 } },// mid vertcal
@@ -68,24 +83,21 @@ Map::Map() : Lines{
 	{ { 0,2 }, { 1,2 }, { 2,2 } }, // right vertcal
 	{ { 0,0 }, { 1,1 }, { 2,2 } }, // right backslash
 	{ { 2,0 }, { 1,1 }, { 0,2 } } } // right slash 
-
-{
-	for (char i = 0; i < 3; i++) {
-		for (char j = 0; j < 3; j++) {
-			// Filling whole array with FLD_EMPTY values
+	{
+	for (char i = 0; i < 3; ++i) {
+		for (char j = 0; j < 3; ++j) {
 			FieldMap[i][j] = FLD_EMPTY;
 		}
 	}
 }
-
 void Map::DrawMap() {
 
-	for (uchar i = 0; i < 3; ++i) {
+	for (char i = 0; i < 3; ++i) {
 		// Left frame
 		std::cout << " |";
 
 		// Line
-		for (uchar j = 0; j < 3; ++j) {
+		for (char j = 0; j < 3; ++j) {
 			if (FieldMap[i][j] == FLD_EMPTY) {
 				// field ID
 				std::cout << i * 3 + j + 1;
@@ -101,35 +113,42 @@ void Map::DrawMap() {
 	std::cout << std::endl;
 }
 
-bool Map::CheckIfMoveIsLegalAndMove(uchar fieldID) {
+void Map::TryToMakeAMove(Players &PlayersObject, Game &GameObject ) {
+	GameObject.SetGameState(GS_MOVE);
 
-	Game::GameState = GS_MOVE;
-	// if field is not in correct range -> break function
-	if (!(fieldID >= 1 && fieldID <= 9)) return false;
+	bool can_field_be_taken = false;
+	char fieldID = 0;
+	int x, y = 0;
 
-	// Calculate field cordinates
-	uint x = (fieldID - 1) / 3;
-	uint y = (fieldID - 1) % 3;
+	std::cout <<  PlayersObject.GetCurrentPlayerName() << " enter ID of field where" << std::endl;
+	std::cout << "You want place " << static_cast<char>(PlayersObject.GetCurrentPlayerSign())<< ": ";
 
-	// Check if field can be taken
-	if (FieldMap[x][y] == FLD_EMPTY) {
-		FieldMap[x][y] = static_cast<FIELD>(Players::CurrentPlayer);
-		return true;
-	}
-	else return false; // Impossible
+	do {
+		fieldID = getchar() -'0';
+		// Get fieldID until it will be correct		
+	} while (!(fieldID >= 1 && fieldID <= 9));
+		// Calculate field cordinates
+		x = (fieldID - 1) / 3;
+		y = (fieldID - 1) % 3;
+
+		// Check if field can be taken
+		if (FieldMap[x][y] == FLD_EMPTY) {
+			FieldMap[x][y] = static_cast<FIELD>(PlayersObject.GetCurrentPlayerSign());
+			can_field_be_taken = true;
+		}
 }
 
-bool Map::CheckIfSomeoneWon() {
+bool Map::CheckIfSomeoneWon(Game &GameObject) {
 
 	FIELD Field, CorrectField;
-	uchar correct_field_counter;
-	for (uchar i = 0; i < 8; ++i)
+	char correct_field_counter;
+	for (char i = 0; i < 8; ++i)
 	{
 		// i iterates every possible line (there's 8 of them)
 		// setting default values to variables
 		Field = CorrectField = FLD_EMPTY;
 		correct_field_counter = 0;
-		for (uchar j = 0; j < 3; ++j)
+		for (char j = 0; j < 3; ++j)
 		{
 			// j iterates every 3 fields in every line
 			// We're getting field
@@ -150,7 +169,8 @@ bool Map::CheckIfSomeoneWon() {
 		if (correct_field_counter == 3 && CorrectField != FLD_EMPTY)
 		{
 			// if yes, set GameState to Won
-			Game::GameState = GS_WON;
+			GameObject.SetGameState(GS_WON);
+			std::cout << std::endl << "DRAW, None of players won";
 			// break loop and function
 			return true;
 		}
@@ -158,18 +178,20 @@ bool Map::CheckIfSomeoneWon() {
 	return false;
 }
 
-bool Map::CheckIfDrawOccured() {
+bool Map::CheckIfDrawOccured(Game &GameObject) {
 
-	uchar amount_Of_Filled_Fields = 0;
-	for (uchar i = 0; i <= 3; i++) {
-		for (uchar j = 0; j < 3; j++) {
+	char amount_of_filled_fields = 0;
+	for (char i = 0; i <= 3; i++) {
+		for (char j = 0; j < 3; j++) {
 			if (FieldMap[i][j] != FLD_EMPTY) {
-				++amount_Of_Filled_Fields;
+				++amount_of_filled_fields;
 			}
 		}
 	}
-	if (amount_Of_Filled_Fields == 9) {
-		Game::GameState = GS_DRAW;
+	if (amount_of_filled_fields == 9) {
+		GameObject.SetGameState(GS_DRAW);
+		std::cout << std::endl << "DRAW. None of players won";
+		GameObject.Pause();
 		return true; // draw occured -> exit
 	}
 	return false; // draw did not occured -> go back to game
