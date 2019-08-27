@@ -17,10 +17,6 @@ void Game::DrawHeader() {
 	std::cout << "" << std::endl;
 }
 
-void Game::Pause() {
-	_getch;
-}
-
 // *********************
 // **PLAYERS**
 // *********************
@@ -41,9 +37,9 @@ string Players::GetCurrentPlayerName() {
 	return current_player_name;
 }
 
-void Players::AskAndSetGivenNames() {
+void Players::AskAndSetGivenNames(Game &GameObject) {
 
-	Game::gameState = GS_STARTED;
+	GameObject.SetGameState(GS_STARTED);
 	std::cout << "Enter player1 name: ";
 	std::cin >> player1_name;
 	std::cout << "Enter player2 name: ";
@@ -138,7 +134,7 @@ void Map::TryToMakeAMove(Players &PlayersObject, Game &GameObject ) {
 		}
 }
 
-bool Map::CheckIfSomeoneWon(Game &GameObject) {
+bool Map::CheckIfSomeoneWon(Game &GameObject, Players &PlayersObject) {
 
 	FIELD Field, CorrectField;
 	char correct_field_counter;
@@ -170,7 +166,7 @@ bool Map::CheckIfSomeoneWon(Game &GameObject) {
 		{
 			// if yes, set GameState to Won
 			GameObject.SetGameState(GS_WON);
-			std::cout << std::endl << "DRAW, None of players won";
+			std::cout << std::endl << PlayersObject.GetCurrentPlayerName() << " WON";
 			// break loop and function
 			return true;
 		}
@@ -191,7 +187,6 @@ bool Map::CheckIfDrawOccured(Game &GameObject) {
 	if (amount_of_filled_fields == 9) {
 		GameObject.SetGameState(GS_DRAW);
 		std::cout << std::endl << "DRAW. None of players won";
-		GameObject.Pause();
 		return true; // draw occured -> exit
 	}
 	return false; // draw did not occured -> go back to game
