@@ -9,7 +9,7 @@ int main() {
 	currentGame.StartNewGame();
 	currentGame.DrawHeader();
 
-	player.AskAndSetGivenNames();
+	player.AskAndSetGivenNames(currentGame);
 
 	player.SetRandomSignToPlayerName();
 	player.DrawWhosFirst();
@@ -18,7 +18,7 @@ int main() {
 		currentGame.DrawHeader();
 		currentMap.DrawMap();
 		currentMap.TryToMakeAMove(player, currentGame);
-		isGameOver = currentMap.CheckIfSomeoneWon(currentGame);
+		isGameOver = currentMap.CheckIfSomeoneWon(currentGame, player);
 		isGameOver = currentMap.CheckIfDrawOccured(currentGame);
 		player.NextPlayer();
 	}
