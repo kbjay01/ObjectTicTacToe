@@ -7,10 +7,10 @@ void Game::SetGameState(GAME_STATE newGameState) {
 }
 
 void Game::StartNewGame() {
-	gameState = GS_STARTED;
+	SetGameState(GS_STARTED);
 }
 
-void Game::DrawHeader() {
+void Game::DrawHeader() const{
 	system("cls");
 	std::cout << "     Objective TicTacToe     " << std::endl;
 	std::cout << "-----------------------------" << std::endl;
@@ -29,11 +29,11 @@ Players::Players() {
 	CurrentPlayerSign = PL_UNKNOWN;
 }
 
-PLAYER_TYPE Players::GetCurrentPlayerSign() {
+PLAYER_TYPE const Players::GetCurrentPlayerSign() {
 	return CurrentPlayerSign;
 }
 
-string Players::GetCurrentPlayerName() {
+string const Players::GetCurrentPlayerName() {
 	return current_player_name;
 }
 
@@ -86,7 +86,7 @@ Map::Map() : Lines {
 		}
 	}
 }
-void Map::DrawMap() {
+void const Map::DrawMap() {
 
 	for (char i = 0; i < 3; ++i) {
 		// Left frame
@@ -109,10 +109,9 @@ void Map::DrawMap() {
 	std::cout << std::endl;
 }
 
-void Map::TryToMakeAMove(Players &PlayersObject, Game &GameObject ) {
+void Map::Move(Players &PlayersObject, Game &GameObject ) {
 	GameObject.SetGameState(GS_MOVE);
 
-	bool can_field_be_taken = false;
 	char fieldID = 0;
 	int x, y = 0;
 
@@ -130,11 +129,10 @@ void Map::TryToMakeAMove(Players &PlayersObject, Game &GameObject ) {
 		// Check if field can be taken
 		if (FieldMap[x][y] == FLD_EMPTY) {
 			FieldMap[x][y] = static_cast<FIELD>(PlayersObject.GetCurrentPlayerSign());
-			can_field_be_taken = true;
 		}
 }
 
-bool Map::CheckIfSomeoneWon(Game &GameObject, Players &PlayersObject) {
+bool const Map::CheckIfSomeoneWon(Game &GameObject, Players &PlayersObject) {
 
 	FIELD Field, CorrectField;
 	char correct_field_counter;
@@ -174,10 +172,10 @@ bool Map::CheckIfSomeoneWon(Game &GameObject, Players &PlayersObject) {
 	return false;
 }
 
-bool Map::CheckIfDrawOccured(Game &GameObject) {
+bool const Map::CheckIfDrawOccured(Game &GameObject) {
 
 	char amount_of_filled_fields = 0;
-	for (char i = 0; i <= 3; i++) {
+	for (char i = 0; i < 3; i++) {
 		for (char j = 0; j < 3; j++) {
 			if (FieldMap[i][j] != FLD_EMPTY) {
 				++amount_of_filled_fields;
@@ -186,6 +184,8 @@ bool Map::CheckIfDrawOccured(Game &GameObject) {
 	}
 	if (amount_of_filled_fields == 9) {
 		GameObject.SetGameState(GS_DRAW);
+		GameObject.DrawHeader();
+		DrawMap();
 		std::cout << std::endl << "DRAW. None of players won";
 		return true; // draw occured -> exit
 	}
