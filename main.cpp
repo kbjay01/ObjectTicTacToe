@@ -17,7 +17,7 @@ int main() {
 	while (isGameOver == false) {
 		currentGame.DrawHeader();
 		currentMap.DrawMap();
-		currentMap.TryToMakeAMove(player, currentGame);
+		currentMap.Move(player, currentGame);
 		isGameOver = currentMap.CheckIfSomeoneWon(currentGame, player);
 		isGameOver = currentMap.CheckIfDrawOccured(currentGame);
 		player.NextPlayer();
