@@ -27,7 +27,7 @@ public:
 	
 	void SetGameState(GAME_STATE);
 	void StartNewGame();
-	void DrawHeader();
+	void DrawHeader() const;
 	
 };
 
@@ -43,8 +43,8 @@ protected:
 public:
 	Players(); // Constructor
 
-	PLAYER_TYPE GetCurrentPlayerSign(); // return sign (char) of current player
-	string GetCurrentPlayerName(); // returns the name of current player
+	PLAYER_TYPE const GetCurrentPlayerSign(); // return sign (char) of current player
+	string const GetCurrentPlayerName(); // returns the name of current player
 	void AskAndSetGivenNames(Game&); // asks users for their names and saves them to variables player1_name and player2_name
 	void SetRandomSignToPlayerName(); // assigns chars to variables player1_char and player2_char
 	void DrawWhosFirst(); // draw which player is going to start first
@@ -59,8 +59,8 @@ private:
 public:
 	Map(); // Constructor
 
-	void DrawMap(); // draws map into console
-	void TryToMakeAMove(Players&, Game&); // requests fieldID from player, checks if move is possible, if so..moves
-	bool CheckIfSomeoneWon(Game&, Players&); // checks if someone won
-	bool CheckIfDrawOccured(Game&); // checks if draw occured
+	void const DrawMap(); // draws map into console
+	void Move(Players&, Game&); // requests fieldID from player, checks if move is possible, if so..moves
+	bool const CheckIfSomeoneWon(Game&, Players&); // checks if someone won
+	bool const CheckIfDrawOccured(Game&); // checks if draw occured
 };
