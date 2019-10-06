@@ -17,6 +17,10 @@ void Game::DrawHeader() const{
 	std::cout << "" << std::endl;
 }
 
+GAME_STATE Game::GetGameState() const{
+	return gameState;
+}
+
 // *********************
 // **PLAYERS**
 // *********************
@@ -29,11 +33,11 @@ Players::Players() {
 	CurrentPlayerSign = PL_UNKNOWN;
 }
 
-PLAYER_TYPE const Players::GetCurrentPlayerSign() {
+PLAYER_TYPE Players::GetCurrentPlayerSign() const {
 	return CurrentPlayerSign;
 }
 
-string const Players::GetCurrentPlayerName() {
+string Players::GetCurrentPlayerName() const {
 	return current_player_name;
 }
 
@@ -69,31 +73,21 @@ void Players::NextPlayer() {
 // *********************
 
 // Map Constructor
-Map::Map() : Lines {
-
-	{ { 0,0 }, { 0,1 }, { 0,2 } }, // top horizontal
-	{ { 1,0 }, { 1,1 }, { 1,2 } },// mid vertcal
-	{ { 2,0 }, { 2,1 }, { 2,2 } },// bottom horizontal
-	{ { 0,0 }, { 1,0 }, { 2,0 } }, // left vertcal
-	{ { 0,1 }, { 1,1 }, { 2,1 } }, // mid vertcal
-	{ { 0,2 }, { 1,2 }, { 2,2 } }, // right vertcal
-	{ { 0,0 }, { 1,1 }, { 2,2 } }, // right backslash
-	{ { 2,0 }, { 1,1 }, { 0,2 } } } // right slash 
-	{
+Map::Map() {
 	for (char i = 0; i < 3; ++i) {
 		for (char j = 0; j < 3; ++j) {
 			FieldMap[i][j] = FLD_EMPTY;
 		}
 	}
 }
-void const Map::DrawMap() {
-
-	for (char i = 0; i < 3; ++i) {
+void Map::DrawMap() const {
+	std::cout << " -----" << std::endl;
+	for (int i = 0; i < 3; ++i) {
 		// Left frame
 		std::cout << " |";
 
 		// Line
-		for (char j = 0; j < 3; ++j) {
+		for (int j = 0; j < 3; ++j) {
 			if (FieldMap[i][j] == FLD_EMPTY) {
 				// field ID
 				std::cout << i * 3 + j + 1;
@@ -132,51 +126,37 @@ void Map::Move(Players &PlayersObject, Game &GameObject ) {
 		}
 }
 
-bool const Map::CheckIfSomeoneWon(Game &GameObject, Players &PlayersObject) {
+bool const Map::CheckIfSomeoneWon(Game& GameObj, Players& PlayersObj) {
+	PLAYER_TYPE currentPlayer = PlayersObj.GetCurrentPlayerSign();
 
-	FIELD Field, CorrectField;
-	char correct_field_counter;
-	for (char i = 0; i < 8; ++i)
-	{
-		// i iterates every possible line (there's 8 of them)
-		// setting default values to variables
-		Field = CorrectField = FLD_EMPTY;
-		correct_field_counter = 0;
-		for (char j = 0; j < 3; ++j)
-		{
-			// j iterates every 3 fields in every line
-			// We're getting field
-			Field = FieldMap[Lines[i][j][0]][Lines[i][j][1]];
-			// if checked field is diffrent than correct field...
-			if (Field != CorrectField)
-			{
-				// set correct field to current field
-				CorrectField = Field;
-				correct_field_counter = 1;
-			}
-			else
-				// if both fields are equal
-				// increment CorrectFieldCounter
-				++correct_field_counter;
-		}
-		// check if whole line is winnable
-		if (correct_field_counter == 3 && CorrectField != FLD_EMPTY)
-		{
-			// if yes, set GameState to Won
-			GameObject.SetGameState(GS_WON);
-			std::cout << std::endl << PlayersObject.GetCurrentPlayerName() << " WON";
-			// break loop and function
-			return true;
-		}
+	while (true) {
+		// checking all horizontal possibilities
+		if ((FieldMap[0][0] == currentPlayer && FieldMap[0][1] == currentPlayer) && FieldMap[0][2] == currentPlayer) break;
+		if ((FieldMap[1][0] == currentPlayer && FieldMap[1][1] == currentPlayer) && FieldMap[1][2] == currentPlayer) break;
+		if ((FieldMap[2][0] == currentPlayer && FieldMap[2][1] == currentPlayer) && FieldMap[2][2] == currentPlayer) break;
+
+		// checking all vertival possibilities
+		if ((FieldMap[0][0] == currentPlayer && FieldMap[1][0] == currentPlayer) && FieldMap[2][0] == currentPlayer) break;
+		if ((FieldMap[0][1] == currentPlayer && FieldMap[1][1] == currentPlayer) && FieldMap[2][1] == currentPlayer) break;
+		if ((FieldMap[0][2] == currentPlayer && FieldMap[1][2] == currentPlayer) && FieldMap[2][2] == currentPlayer) break;
+
+		// checking two other possibilities
+		if ((FieldMap[0][0] == currentPlayer && FieldMap[1][1] == currentPlayer) && FieldMap[2][2] == currentPlayer) break;
+		if ((FieldMap[0][2] == currentPlayer && FieldMap[1][1] == currentPlayer) && FieldMap[2][0] == currentPlayer) break;
+		return false;
 	}
-	return false;
+	GameObj.SetGameState(GS_WON);
+	GameObj.DrawHeader();
+	DrawMap();
+	std::cout << PlayersObj.GetCurrentPlayerName() << " WON!" << std::endl;
+	return true; // win occured -> exit
 }
 
 bool const Map::CheckIfDrawOccured(Game &GameObject) {
 
-	char amount_of_filled_fields = 0;
-	for (char i = 0; i < 3; i++) {
-		for (char j = 0; j < 3; j++) {
+	int amount_of_filled_fields = 0;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
 			if (FieldMap[i][j] != FLD_EMPTY) {
 				++amount_of_filled_fields;
 			}
