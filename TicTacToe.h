@@ -2,6 +2,7 @@
 #include <iostream>
 #include <ctime>
 #include <conio.h>
+#include <cctype>
 
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -29,6 +30,7 @@ public:
 	void StartNewGame();
 	void DrawHeader() const;
 	GAME_STATE GetGameState() const;
+	bool AskIfWantToPlayOnceAgain() const;
 	
 };
 
@@ -60,7 +62,7 @@ public:
 	Map(); // Constructor
 
 	void DrawMap() const; // draws map into console
-	void Move(Players&, Game&); // requests fieldID from player, checks if move is possible, if so..moves
-	bool const CheckIfSomeoneWon(Game&, Players&); // checks if someone won
+	void Move(const Players&, Game&); // requests fieldID from player, checks if move is possible, if so..moves
+	bool const CheckIfSomeoneWon(Game&, const Players&); // checks if someone won
 	bool const CheckIfDrawOccured(Game&); // checks if draw occured
 };
