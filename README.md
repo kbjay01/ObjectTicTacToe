@@ -5,5 +5,5 @@ Project is done. After testing everything seems to be working. This project took
 
 Enjoy :D
 
-Special thanks to dsonny, who helped me many times, spend couple hours explaining me something, or helping to fix a bug :).
+Special thanks to Szymon Bednorz, who helped me many times, spend couple hours explaining me something, or helping to fix a bug :).
 His github -> https://github.com/dsonyy
