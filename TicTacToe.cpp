@@ -1,6 +1,8 @@
 #include "TicTacToe.h"
 
+// *********************
 //**GAME**
+// *********************
 
 void Game::SetGameState(GAME_STATE newGameState) {
 	gameState = newGameState;
@@ -20,6 +22,24 @@ void Game::DrawHeader() const{
 GAME_STATE Game::GetGameState() const{
 	return gameState;
 }
+
+bool Game::AskIfWantToPlayOnceAgain() const{
+	std::cout << "Would you like to play one more time? [y/n]: ";
+	char yesOrNo ='0';
+
+	do {
+		yesOrNo = getchar();	
+		yesOrNo = tolower(yesOrNo);
+	} while (!(yesOrNo =='y' || yesOrNo =='n'));
+	switch (yesOrNo) {
+	case 'y':
+		return true;
+	case 'n':
+		return false;
+	}
+
+}
+
 
 // *********************
 // **PLAYERS**
@@ -103,7 +123,7 @@ void Map::DrawMap() const {
 	std::cout << std::endl;
 }
 
-void Map::Move(Players &PlayersObject, Game &GameObject ) {
+void Map::Move(const Players &PlayersObject, Game &GameObject ) {
 	GameObject.SetGameState(GS_MOVE);
 
 	char fieldID = 0;
@@ -126,7 +146,7 @@ void Map::Move(Players &PlayersObject, Game &GameObject ) {
 		}
 }
 
-bool const Map::CheckIfSomeoneWon(Game& GameObj, Players& PlayersObj) {
+bool const Map::CheckIfSomeoneWon(Game& GameObj, const Players& PlayersObj) {
 	PLAYER_TYPE currentPlayer = PlayersObj.GetCurrentPlayerSign();
 
 	while (true) {
@@ -147,7 +167,7 @@ bool const Map::CheckIfSomeoneWon(Game& GameObj, Players& PlayersObj) {
 	}
 	GameObj.SetGameState(GS_WON);
 	GameObj.DrawHeader();
-	DrawMap();
+	this->DrawMap();
 	std::cout << PlayersObj.GetCurrentPlayerName() << " WON!" << std::endl;
 	return true; // win occured -> exit
 }
