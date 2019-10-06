@@ -4,7 +4,6 @@ int main() {
 	Game currentGame;
 	Players player;
 	Map currentMap;
-	bool isGameOver = false;
 
 	currentGame.StartNewGame();
 	currentGame.DrawHeader();
@@ -13,13 +12,13 @@ int main() {
 
 	player.SetRandomSignToPlayerName();
 	player.DrawWhosFirst();
-
-	while (isGameOver == false) {
+	
+	while (true) {
 		currentGame.DrawHeader();
 		currentMap.DrawMap();
 		currentMap.Move(player, currentGame);
-		isGameOver = currentMap.CheckIfSomeoneWon(currentGame, player);
-		isGameOver = currentMap.CheckIfDrawOccured(currentGame);
+		if (currentMap.CheckIfSomeoneWon(currentGame, player) == true) break;
+		if(currentMap.CheckIfDrawOccured(currentGame) == true) break;
 		player.NextPlayer();
 	}
 }
