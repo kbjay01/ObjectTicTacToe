@@ -1,24 +1,29 @@
 #include "TicTacToe.h"
 
 int main() {
-	Game currentGame;
-	Players player;
-	Map currentMap;
-
-	currentGame.StartNewGame();
-	currentGame.DrawHeader();
-
-	player.AskAndSetGivenNames(currentGame);
-
-	player.SetRandomSignToPlayerName();
-	player.DrawWhosFirst();
-	
 	while (true) {
-		currentGame.DrawHeader();
-		currentMap.DrawMap();
-		currentMap.Move(player, currentGame);
-		if (currentMap.CheckIfSomeoneWon(currentGame, player) == true) break;
-		if(currentMap.CheckIfDrawOccured(currentGame) == true) break;
-		player.NextPlayer();
+		Game game;
+		Players players;
+		Map map;
+
+		game.StartNewGame();
+		game.DrawHeader();
+
+		players.AskAndSetGivenNames(game);
+
+		players.SetRandomSignToPlayerName();
+		players.DrawWhosFirst();
+
+		while (true) {
+			game.DrawHeader();
+			map.DrawMap();
+			map.Move(players, game);
+			if (map.CheckIfSomeoneWon(game, players) == true) break;
+			if (map.CheckIfDrawOccured(game) == true) break;
+			players.NextPlayer();
+		}
+		bool oneMoreGame = game.AskIfWantToPlayOnceAgain();
+		if (oneMoreGame == false) return 0;
 	}
+	return 0;
 }
