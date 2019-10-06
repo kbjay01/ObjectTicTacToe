@@ -1,4 +1,6 @@
 # ObjectTicTacToe
-TicTacToe game, as a project that I am learning from, but this time using Object Oriented Programming
+TicTacToe game, as a project that I was learning from. I've already built such a game, but I wasn't using OOP techniques. It was actually a homework from C++ course that I was learning from. I modified non OOP code to OOP app, and yeah it finally works.
 
-Project is still in building process, currently I'm trying to figure out what's wrong with algorithms responsible for checking state of the game, like chcecking if win or draw occured.
+Project is done. After testing everything seems to be working. This project took me way to long to make, but I think that I learned many things from it. One day I just decided that I want to finish this project, and make this app work. And here it is
+
+Enjoy :D
